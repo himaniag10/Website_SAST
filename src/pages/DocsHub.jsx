@@ -1,6 +1,12 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect, useMemo } from "react";
-import { Link, Routes, Route, useLocation, useParams, Navigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  useLocation,
+  useParams,
+  Navigate,
+} from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -21,13 +27,13 @@ import memberNames from "../components/docs/member-names.md?raw";
 // Map of all docs with their content
 const DOCS_MAP = {
   "about-sast": { title: "About SAST", content: aboutSast, category: "Introduction" },
-  "guidelines": { title: "Guidelines", content: guidelines, category: "Getting Started" },
-  "contribution": { title: "Contribution Guide", content: contribution, category: "Getting Started" },
+  guidelines: { title: "Guidelines", content: guidelines, category: "Getting Started" },
+  contribution: { title: "Contribution Guide", content: contribution, category: "Getting Started" },
   "code-of-conduct": { title: "Code of Conduct", content: codeOfConduct, category: "Getting Started" },
   "github-process": { title: "GitHub Process", content: githubProcess, category: "Development" },
   "community-roles": { title: "Community Roles", content: communityRoles, category: "Community" },
-  "faqs": { title: "FAQs", content: faqs, category: "Help" },
-  "learning": { title: "Learning Resources", content: learning, category: "Resources" },
+  faqs: { title: "FAQs", content: faqs, category: "Help" },
+  learning: { title: "Learning Resources", content: learning, category: "Resources" },
   "contributors-name": { title: "Contributors", content: contributorsName, category: "Community" },
   "member-names": { title: "Members", content: memberNames, category: "Community" },
 };
@@ -35,14 +41,12 @@ const DOCS_MAP = {
 // Header Component
 function DocsHeader() {
   return (
-    <header className="docs-header">
+    <header className="docs-header" id="docs-header">
       <div className="docs-header-badge">
         <Book size={20} />
         <span>Documentation</span>
       </div>
-      <h1 className="docs-header-title">
-        Community Handbook
-      </h1>
+      <h1 className="docs-header-title">Community Handbook</h1>
       <p className="docs-header-description">
         Your comprehensive guide to contributing, learning, and growing with SAST.
       </p>
@@ -62,14 +66,32 @@ function DocsHeader() {
 function DocsSidebar({ docs, query, setQuery, activeId }) {
   const groupedDocs = useMemo(() => {
     const groups = {};
-    docs.forEach(doc => {
-      if (!groups[doc.category]) {
-        groups[doc.category] = [];
-      }
+    docs.forEach((doc) => {
+      if (!groups[doc.category]) groups[doc.category] = [];
       groups[doc.category].push(doc);
     });
     return groups;
   }, [docs]);
+
+  const handleNavClick = (e, id) => {
+    e.preventDefault(); // prevent default Link scroll
+    const header = document.getElementById("docs-header");
+    const headerHeight = header ? header.offsetHeight : 300;
+
+    // manually navigate to the page without reloading
+    window.history.pushState({}, "", `/docs/${id}`);
+
+    // scroll smoothly below the header
+    setTimeout(() => {
+      window.scrollTo({
+        top: headerHeight + 40,
+        behavior: "smooth",
+      });
+    }, 100);
+
+    // trigger router update
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  };
 
   return (
     <aside className="docs-sidebar">
@@ -91,16 +113,17 @@ function DocsSidebar({ docs, query, setQuery, activeId }) {
               {categoryDocs.map((doc) => {
                 const isActive = activeId === doc.id;
                 return (
-                  <Link
+                  <a
                     key={doc.id}
-                    to={`/docs/${doc.id}`}
-                    className={`docs-nav-item ${isActive ? 'active' : ''}`}
+                    href={`/docs/${doc.id}`}
+                    className={`docs-nav-item ${isActive ? "active" : ""}`}
+                    onClick={(e) => handleNavClick(e, doc.id)}
                   >
                     <span className="docs-nav-indicator"></span>
                     <FileText size={16} className="docs-nav-icon" />
                     <span className="docs-nav-title">{doc.title}</span>
                     {isActive && <CheckCircle size={14} className="docs-nav-check" />}
-                  </Link>
+                  </a>
                 );
               })}
             </div>
@@ -117,17 +140,32 @@ function DocsSidebar({ docs, query, setQuery, activeId }) {
 
 // Content Renderer Component
 function DocRenderer({ doc }) {
+  const docRef = React.useRef(null);
+
+  useEffect(() => {
+    // scroll below header when document changes
+    const header = document.getElementById("docs-header");
+    const headerHeight = header ? header.offsetHeight : 300;
+
+    window.scrollTo({
+      top: headerHeight + 40,
+      behavior: "smooth",
+    });
+
+    // reset internal scroll of markdown content
+    if (docRef.current) {
+      docRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [doc.id]);
+
   return (
-    <article className="docs-content">
+    <article className="docs-content" ref={docRef}>
       <div className="docs-content-header">
         <span className="docs-content-category">{doc.category}</span>
         <h1 className="docs-content-title">{doc.title}</h1>
       </div>
       <div className="markdown-body">
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeRaw]}
-        >
+        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
           {doc.content}
         </ReactMarkdown>
       </div>
@@ -139,21 +177,21 @@ function DocRenderer({ doc }) {
 function DocPage({ docs }) {
   const { slug } = useParams();
   const doc = docs.find((d) => d.id === slug);
-  
+
   if (!doc) {
     return (
       <div className="docs-not-found">
         <FileText size={48} />
         <h2>Document not found</h2>
         <p>The requested documentation page could not be found.</p>
-        <Link to="/docs" className="docs-back-button">
+        <a href="/docs" className="docs-back-button">
           <ArrowLeft size={16} />
           Back to Documentation
-        </Link>
+        </a>
       </div>
     );
   }
-  
+
   return <DocRenderer doc={doc} />;
 }
 
@@ -164,7 +202,6 @@ export default function DocsHub() {
   const [allDocs, setAllDocs] = useState([]);
 
   useEffect(() => {
-    // Convert DOCS_MAP to array format
     const docsArray = Object.entries(DOCS_MAP).map(([id, data]) => ({
       id,
       title: data.title,
@@ -176,10 +213,11 @@ export default function DocsHub() {
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
-    return allDocs.filter((d) =>
-      d.title.toLowerCase().includes(q) || 
-      d.category.toLowerCase().includes(q) ||
-      d.content.toLowerCase().includes(q)
+    return allDocs.filter(
+      (d) =>
+        d.title.toLowerCase().includes(q) ||
+        d.category.toLowerCase().includes(q) ||
+        d.content.toLowerCase().includes(q)
     );
   }, [query, allDocs]);
 
@@ -193,7 +231,6 @@ export default function DocsHub() {
     <section className="docs-page">
       <div className="docs-container">
         <DocsHeader />
-
         <div className="docs-layout">
           <DocsSidebar
             docs={filtered}
@@ -201,7 +238,6 @@ export default function DocsHub() {
             setQuery={setQuery}
             activeId={activeId}
           />
-
           <main className="docs-main">
             <Routes>
               <Route
