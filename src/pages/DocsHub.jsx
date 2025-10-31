@@ -48,15 +48,18 @@ function DocsHeader() {
       </div>
       <h1 className="docs-header-title">Community Handbook</h1>
       <p className="docs-header-description">
-        Your comprehensive guide to contributing, learning, and growing with SAST.
+        Your comprehensive guide to contributing, learning, and growing with
+        SAST.
       </p>
       <div className="docs-header-divider"></div>
       <div className="docs-header-tags">
-        {["Open Source", "Community Guidelines", "Best Practices"].map((tag) => (
-          <span key={tag} className="docs-header-tag">
-            {tag}
-          </span>
-        ))}
+        {["Open Source", "Community Guidelines", "Best Practices"].map(
+          (tag) => (
+            <span key={tag} className="docs-header-tag">
+              {tag}
+            </span>
+          )
+        )}
       </div>
     </header>
   );

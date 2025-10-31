@@ -330,7 +330,7 @@ const Events = () => {
       </div>
 
       {/* Main Content - Not constrained by video */}
-      <div className="relative w-full min-h-screen pt-44 md:pt-56 pb-40">
+      <div className="relative w-full min-h-screen pt-25 md:pt-30 pb-40">
         <section className="w-full flex flex-col items-center mt-28">
 
           {/* 🌌 Filter Navbar */}
@@ -344,7 +344,7 @@ const Events = () => {
               </Link>
             </div>
 
-            <div className="relative flex items-center justify-between bg-white/5 backdrop-blur-md border border-white/10 rounded-full shadow-md px-3 py-2 sm:px-4 sm:py-3 overflow-x-auto no-scrollbar w-full max-w-[95vw] sm:max-w-md md:max-w-lg">
+            <div className="relative flex items-center justify-between bg-white/5 backdrop-blur-md border border-white/10 rounded-full shadow-md px-3 py-2 sm:px-4 sm:py-3 w-full max-w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl">
               {filterTypes.map((type) => (
                 <button
                   key={type}
@@ -375,7 +375,7 @@ const Events = () => {
                       ? "25%"
                       : filterType === "ongoing"
                       ? "48%"
-                      : "77%",
+                      : "76%",
                   width:
                     filterType === "all"
                       ? "80px"
@@ -418,7 +418,7 @@ const Events = () => {
                   
                   {/* Date Badge */}
                   <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
-                    <div className="bg-blue-500/90 backdrop-blur-sm text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl shadow-lg">
+                    <div className="relative bg-white/20 backdrop-blur-lg text-white font-medium px-5 py-2.5 rounded-xl border border-white/40 shadow-[0_4px_20px_rgba(255,255,255,0.15)] hover:bg-white/30 hover:border-white/60 hover:shadow-[0_4px_30px_rgba(255,255,255,0.25)] transition-all duration-300 ease-out">
                       <p className="text-xs sm:text-sm font-semibold">
                         {new Date(event.startDate).toLocaleDateString('en-US', { 
                           month: 'short', 
