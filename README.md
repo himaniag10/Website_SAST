@@ -1,4 +1,4 @@
-# 🌌 Society for Astrophysics and Space Technology (SAST) — Official Website  
+# 🌌 Society for Aerospace and Space Technology (SAST) — Official Website  
 
 Welcome to the official repository of the **Society for Astrophysics and Space Technology (SAST)** at **Rishihood University**.  
 This project is dedicated to building a modern, interactive, and informative website that showcases our club’s **spirit, achievements, research, and events** in the field of space and astrophysics.  
